@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)file:///C:/Users/CQ6880/Downloads/burn-turtle_1.html -->
+<html lang="zh-TW"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>線上燒烏龜 🐢</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#FFF8F4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang TC','Noto Sans TC',sans-serif;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem;}
+.wrap{width:100%;max-width:520px;}
+.step{display:none;}.step.active{display:block;}
+.dots{display:flex;justify-content:center;gap:7px;margin-bottom:1.25rem;}
+.dot{width:9px;height:9px;border-radius:50%;background:#FFD5B5;transition:background .3s,transform .3s;}
+.dot.on{background:#FF9B6A;transform:scale(1.3);}
+.page-title{font-size:22px;font-weight:600;color:#5A2D0C;text-align:center;margin-bottom:5px;}
+.page-sub{font-size:14px;color:#A06040;text-align:center;margin-bottom:1.4rem;line-height:1.7;}
+.form-row{margin-bottom:.9rem;}
+label{display:block;font-size:13px;color:#A06040;margin-bottom:4px;}
+input[type=date],input[type=time],input[type=text]{
+  width:100%;padding:10px 14px;border-radius:10px;
+  border:1.5px solid #FFD0B0;background:#fff;
+  color:#5A2D0C;font-size:15px;outline:none;
+  transition:border-color .2s;
+}
+input:focus{border-color:#FF9B6A;}
+.btn-main{
+  width:100%;padding:14px;border-radius:999px;
+  background:#FF9B6A;color:#fff;border:none;
+  font-size:15px;font-weight:600;cursor:pointer;
+  margin-top:.9rem;transition:transform .12s,opacity .12s;
+  letter-spacing:.5px;
+}
+.btn-main:hover{opacity:.88;}.btn-main:active{transform:scale(.97);}
+.btn-sub{
+  width:100%;padding:11px;border-radius:999px;background:#fff;
+  color:#A06040;border:1.5px solid #FFD0B0;font-size:14px;
+  cursor:pointer;margin-top:.55rem;transition:background .15s;
+}
+.btn-sub:hover{background:#FFF3EC;}
+.info-pill{
+  background:#FFF0E8;border-radius:12px;padding:.75rem 1rem;
+  font-size:14px;color:#A05020;line-height:1.65;
+  margin-bottom:1.1rem;text-align:center;border:1px solid #FFD5B5;
+}
+.info-pill strong{color:#7A3010;}
+.spawn-area{
+  border-radius:16px;border:2.5px dashed #FFD0B0;background:#fff;
+  min-height:170px;padding:1.1rem;cursor:pointer;
+  margin-bottom:.65rem;transition:background .12s,border-color .12s;
+  user-select:none;position:relative;overflow:hidden;
+}
+.spawn-area:hover{background:#FFF8F4;border-color:#FF9B6A;}
+.spawn-area:active{transform:scale(.985);}
+.t-grid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:50px;margin-bottom:.5rem;}
+.t-ico{font-size:27px;display:inline-block;animation:popIn .28s cubic-bezier(.36,2.2,.6,1);}
+@keyframes popIn{from{transform:scale(0) rotate(-15deg);opacity:0;}to{transform:scale(1) rotate(0);opacity:1;}}
+.wiggle{animation:wiggle .4s ease !important;}
+@keyframes wiggle{0%{transform:rotate(0);}25%{transform:rotate(-12deg);}75%{transform:rotate(12deg);}100%{transform:rotate(0);}}
+.spawn-hint{font-size:13px;color:#D08060;text-align:center;}
+.count-bar-wrap{margin-bottom:.9rem;}
+.count-label{display:flex;justify-content:space-between;font-size:13px;color:#C06030;margin-bottom:5px;}
+.count-bar-bg{height:7px;border-radius:4px;background:#FFE5D5;overflow:hidden;}
+.count-bar-fill{height:7px;border-radius:4px;background:linear-gradient(90deg,#FFD094,#FF9B6A);transition:width .4s cubic-bezier(.36,1.4,.6,1);width:0%;}
+.float-label{position:absolute;font-size:20px;pointer-events:none;animation:floatUp .75s ease forwards;}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-60px) scale(.5);}}
+.scene-box{border-radius:16px;width:100%;min-height:230px;position:relative;overflow:hidden;margin-bottom:.9rem;}
+.scene-canvas{position:absolute;top:0;left:0;width:100%;height:100%;}
+.burn-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;text-align:center;font-size:36px;line-height:1.35;transition:opacity .6s,transform .6s;}
+.poof{position:absolute;font-size:22px;pointer-events:none;z-index:4;animation:poofUp 1s ease forwards;}
+@keyframes poofUp{0%{opacity:1;transform:translateY(0) scale(1);}40%{opacity:1;transform:translateY(-30px) scale(1.3);}100%{opacity:0;transform:translateY(-95px) scale(.3);}}
+.sky-scene{
+  background:#B8E4F9;border-radius:16px;width:100%;
+  min-height:230px;position:relative;overflow:hidden;
+  margin-bottom:.9rem;display:flex;align-items:center;justify-content:center;
+}
+.cloud-chunk{position:absolute;transition:transform 2.2s cubic-bezier(.4,0,.2,1),opacity 2.2s ease;}
+.cpuff{position:absolute;border-radius:999px;background:#fff;}
+.sun-wrap{
+  position:relative;z-index:4;
+  opacity:0;transform:scale(0) translateY(40px);
+  transition:opacity 1.3s cubic-bezier(.36,1.6,.6,1),transform 1.3s cubic-bezier(.36,1.6,.6,1);
+}
+.sun-disk{width:80px;height:80px;background:#FFD700;border-radius:50%;position:relative;z-index:2;}
+.rainbow-arc{position:absolute;bottom:16%;left:50%;transform:translateX(-50%);z-index:3;opacity:0;transition:opacity 1.6s ease;}
+.blessing-card{
+  background:#fff;border-radius:14px;padding:1.25rem;
+  text-align:center;margin-bottom:1rem;
+  border:1.5px solid #FFD5B5;
+}
+.blessing-title{font-size:20px;font-weight:600;color:#B05020;margin-bottom:.4rem;}
+.blessing-detail{font-size:14px;color:#C06030;line-height:1.8;white-space:pre-line;}
+.cheer{display:inline-block;animation:bounce .6s ease infinite alternate;}
+@keyframes bounce{from{transform:translateY(0);}to{transform:translateY(-5px);}}
+.footer{text-align:center;font-size:12px;color:#D0A080;margin-top:1.5rem;padding-bottom:1rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="dots">
+  <div class="dot on" id="d0"></div>
+  <div class="dot" id="d1"></div>
+  <div class="dot" id="d2"></div>
+  <div class="dot" id="d3"></div>
+</div>
+
+<div class="step active" id="s0">
+  <p class="page-title">線上燒烏龜 🐢</p>
+  <p class="page-sub">先告訴烏龜，你希望哪天哪裡放晴吧！</p>
+  <div class="form-row"><label>祈晴日期</label><input type="date" id="iDate"></div>
+  <div class="form-row"><label>祈晴時間</label><input type="time" id="iTime"></div>
+  <div class="form-row"><label>祈晴地點</label><input type="text" id="iPlace" placeholder="例如：台北信義區"></div>
+  <button class="btn-main" onclick="toS1()">下一步，去召喚烏龜 ✨</button>
+</div>
+
+<div class="step" id="s1">
+  <p class="page-title">召喚你的烏龜大軍！</p>
+  <p class="page-sub">每點一下生一隻，邊點邊默念好天氣～</p>
+  <div class="info-pill" id="infoPill"></div>
+  <div class="spawn-area" id="spawnArea" onclick="addT(event)">
+    <div class="t-grid" id="tGrid"></div>
+    <div class="spawn-hint" id="spawnHint">點這裡召喚烏龜！</div>
+  </div>
+  <div class="count-bar-wrap">
+    <div class="count-label"><span id="cLabel">0 隻烏龜</span><span id="cMood" style="color:#FF9B6A"></span></div>
+    <div class="count-bar-bg"><div class="count-bar-fill" id="cBar"></div></div>
+  </div>
+  <button class="btn-main" id="burnBtn" style="opacity:.38;pointer-events:none" onclick="toS2()">點火燒烏龜 🔥</button>
+  <button class="btn-sub" onclick="toS0()">← 修改日期地點</button>
+</div>
+
+<div class="step" id="s2">
+  <p class="page-title">燒烏龜中⋯</p>
+  <p class="page-sub">請唸出日期、時間與地點，誠心祈求晴天！</p>
+  <div class="scene-box" style="background:#FFF3EC;" id="fireScene">
+    <canvas class="scene-canvas" id="fCanvas"></canvas>
+    <div class="burn-center" id="bCenter"></div>
+  </div>
+  <div class="info-pill" id="burnPill"></div>
+</div>
+
+<div class="step" id="s3">
+  <div class="sky-scene" id="skyScene">
+    <div class="cloud-chunk" id="cL" style="left:0;top:0;width:52%;height:100%;">
+      <div class="cpuff" style="width:120px;height:44px;top:22%;left:6%;"></div>
+      <div class="cpuff" style="width:80px;height:32px;top:40%;left:16%;"></div>
+    </div>
+    <div class="cloud-chunk" id="cR" style="right:0;top:0;width:52%;height:100%;">
+      <div class="cpuff" style="width:100px;height:38px;top:20%;right:8%;"></div>
+      <div class="cpuff" style="width:70px;height:28px;top:42%;right:20%;"></div>
+    </div>
+    <svg class="rainbow-arc" id="rainbow" width="280" height="110" viewBox="0 0 280 110">
+      <path d="M8 100 Q140 -20 272 100" fill="none" stroke="#FF9B9B" stroke-width="9" stroke-linecap="round"></path>
+      <path d="M21 100 Q140 -5 259 100" fill="none" stroke="#FFD26F" stroke-width="8" stroke-linecap="round"></path>
+      <path d="M35 100 Q140 10 245 100" fill="none" stroke="#A8E6A3" stroke-width="7" stroke-linecap="round"></path>
+      <path d="M49 100 Q140 22 231 100" fill="none" stroke="#8AD4F5" stroke-width="6" stroke-linecap="round"></path>
+    </svg>
+    <div class="sun-wrap" id="sunWrap">
+      <div style="position:relative;width:80px;height:80px;">
+        <svg style="position:absolute;top:-26px;left:-26px;width:132px;height:132px;" viewBox="0 0 132 132">
+          <g transform="translate(66,66)">
+            <rect x="-4" y="-58" width="8" height="20" rx="4" fill="#FFD700" transform="rotate(0)"></rect>
+            <rect x="-4" y="-58" width="8" height="20" rx="4" fill="#FFD700" transform="rotate(45)"></rect>
+            <rect x="-4" y="-58" width="8" height="20" rx="4" fill="#FFD700" transform="rotate(90)"></rect>
+            <rect x="-4" y="-58" width="8" height="20" rx="4" fill="#FFD700" transform="rotate(135)"></rect>
+            <rect x="-4" y="-58" width="8" height="20" rx="4" fill="#FFD700" transform="rotate(180)"></rect>
+            <rect x="-4" y="-58" width="8" height="20" rx="4" fill="#FFD700" transform="rotate(225)"></rect>
+            <rect x="-4" y="-58" width="8" height="20" rx="4" fill="#FFD700" transform="rotate(270)"></rect>
+            <rect x="-4" y="-58" width="8" height="20" rx="4" fill="#FFD700" transform="rotate(315)"></rect>
+            <circle r="32" fill="#FFD700"></circle>
+            <circle cx="-9" cy="-7" r="5" fill="#FFC020" opacity=".45"></circle>
+            <circle cx="8" cy="-12" r="3" fill="#FFC020" opacity=".35"></circle>
+          </g>
+        </svg>
+        <div class="sun-disk"></div>
+      </div>
+    </div>
+  </div>
+  <div class="blessing-card">
+    <div class="blessing-title"><span class="cheer">🌞</span> 烏雲歸去，晴天到來！</div>
+    <div class="blessing-detail" id="blessDetail"></div>
+  </div>
+  <button class="btn-main" onclick="resetAll()">再燒一次 🐢</button>
+</div>
+
+<div class="footer">烏雲歸去 · 晴天到來 🐢</div>
+</div>
+
+<script>
+let cnt=0,ud={};
+const moods=['','加油，繼續點！','很好，繼續！','超有誠意！','烏龜大軍集結中！','威力加倍！','祈晴成功率大增！','無敵烏龜陣！'];
+
+function setDot(i){[0,1,2,3].forEach(j=>document.getElementById('d'+j).classList.toggle('on',j===i));}
+function showStep(id){['s0','s1','s2','s3'].forEach(s=>document.getElementById(s).classList.remove('active'));document.getElementById(id).classList.add('active');}
+function toS0(){showStep('s0');setDot(0);}
+
+function toS1(){
+  const d=document.getElementById('iDate').value;
+  const t=document.getElementById('iTime').value;
+  const p=document.getElementById('iPlace').value.trim();
+  if(!d||!t||!p){alert('請填寫完整的日期、時間與地點！');return;}
+  const ds=new Date(d).toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric'});
+  const[hh,mm]=t.split(':');
+  ud={date:ds,time:hh+':'+mm,place:p};
+  document.getElementById('infoPill').innerHTML='<strong>'+ds+' '+hh+':'+mm+'</strong>，'+p;
+  showStep('s1');setDot(1);
+}
+
+function addT(e){
+  cnt++;
+  const g=document.getElementById('tGrid');
+  const el=document.createElement('span');
+  el.className='t-ico';el.textContent='🐢';
+  g.appendChild(el);
+  const area=document.getElementById('spawnArea');
+  const rect=area.getBoundingClientRect();
+  const fl=document.createElement('span');
+  fl.className='float-label';
+  fl.textContent=['✨','🌟','💛','⭐'][Math.floor(Math.random()*4)];
+  fl.style.left=(e.clientX-rect.left-12)+'px';
+  fl.style.top=(e.clientY-rect.top-10)+'px';
+  area.appendChild(fl);
+  setTimeout(()=>fl.remove(),800);
+  setTimeout(()=>{
+    const ts=g.querySelectorAll('.t-ico');
+    const last=ts[ts.length-1];
+    if(last){last.classList.remove('wiggle');void last.offsetWidth;last.classList.add('wiggle');}
+  },100);
+  document.getElementById('cLabel').textContent=cnt+' 隻烏龜';
+  document.getElementById('cBar').style.width=Math.min(cnt/20*100,100)+'%';
+  const mi=Math.min(Math.floor(cnt/3),moods.length-1);
+  document.getElementById('cMood').textContent=cnt>=3?moods[mi]:'';
+  if(cnt===1)document.getElementById('spawnHint').textContent='繼續點，越多越靈驗！';
+  if(cnt>=1){const b=document.getElementById('burnBtn');b.style.opacity='1';b.style.pointerEvents='auto';}
+}
+
+function toS2(){
+  if(cnt<1)return;
+  document.getElementById('burnPill').innerHTML='<strong>'+ud.date+' '+ud.time+'</strong>，'+ud.place+'<br>默念：「烏雲歸去，晴天到來！」';
+  const bc=document.getElementById('bCenter');
+  let rows='',row='';
+  const show=Math.min(cnt,15);
+  for(let i=0;i<show;i++){row+='🐢';if((i+1)%5===0){rows+=row+'<br>';row='';}}
+  if(row)rows+=row;
+  if(cnt>15)rows+=' +更多';
+  bc.innerHTML=rows;
+  showStep('s2');setDot(2);
+  startFire();
+  setTimeout(()=>{bc.style.opacity='0';bc.style.transform='translate(-50%,-50%) scale(0) rotate(10deg)';spawnPoofs();},1100);
+  setTimeout(()=>{showStep('s3');setDot(3);startSky();},4000);
+}
+
+function spawnPoofs(){
+  const sc=document.getElementById('fireScene');
+  const em=['✨','🌟','💛','⭐','💫','🌸'];
+  for(let i=0;i<16;i++){
+    setTimeout(()=>{
+      const p=document.createElement('span');p.className='poof';
+      p.textContent=em[i%em.length];
+      p.style.left=Math.random()*80+10+'%';p.style.top=Math.random()*60+15+'%';
+      sc.appendChild(p);setTimeout(()=>p.remove(),1100);
+    },i*90);
+  }
+}
+
+function startFire(){
+  const sc=document.getElementById('fireScene');
+  const cv=document.getElementById('fCanvas');
+  cv.width=sc.offsetWidth||460;cv.height=sc.offsetHeight||230;
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  const pts=Array.from({length:70},()=>({
+    x:W/2+(Math.random()-.5)*110,y:H-15,
+    vx:(Math.random()-.5)*1.4,vy:-(Math.random()*2.8+1.3),
+    life:Math.random()*40,max:Math.random()*55+38,r:Math.random()*7+3
+  }));
+  const cols=['#FFD94A','#FFBB44','#FF9B6A','#FFE580','#FFCC55','#FFF0A0'];
+  let fr=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      p.x+=p.vx+Math.sin(fr*.07+p.y*.025)*.55;p.y+=p.vy;p.life++;
+      if(p.life>p.max){p.x=W/2+(Math.random()-.5)*110;p.y=H-10;p.life=0;p.vy=-(Math.random()*2.8+1.3);p.vx=(Math.random()-.5)*1.4;}
+      const ratio=1-p.life/p.max;
+      ctx.globalAlpha=ratio*.88;
+      ctx.fillStyle=cols[Math.floor(Math.random()*cols.length)];
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r*ratio,0,Math.PI*2);ctx.fill();
+    });
+    ctx.globalAlpha=1;fr++;
+    if(fr<220)requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function startSky(){
+  setTimeout(()=>{
+    document.getElementById('cL').style.cssText+='transform:translateX(-180px);opacity:0;';
+    document.getElementById('cR').style.cssText+='transform:translateX(180px);opacity:0;';
+  },200);
+  setTimeout(()=>{const sw=document.getElementById('sunWrap');sw.style.opacity='1';sw.style.transform='scale(1) translateY(0)';},1200);
+  setTimeout(()=>{document.getElementById('rainbow').style.opacity='1';},2000);
+  document.getElementById('blessDetail').textContent=ud.date+' '+ud.time+'，'+ud.place+'\n願那天陽光燦爛，萬里無雲！';
+}
+
+function resetAll(){
+  cnt=0;
+  document.getElementById('tGrid').innerHTML='';
+  document.getElementById('cLabel').textContent='0 隻烏龜';
+  document.getElementById('cMood').textContent='';
+  document.getElementById('cBar').style.width='0%';
+  document.getElementById('spawnHint').textContent='點這裡召喚烏龜！';
+  document.getElementById('burnBtn').style.opacity='.38';
+  document.getElementById('burnBtn').style.pointerEvents='none';
+  document.getElementById('iDate').value='';document.getElementById('iTime').value='';document.getElementById('iPlace').value='';
+  const bc=document.getElementById('bCenter');bc.style.opacity='1';bc.style.transform='translate(-50%,-50%) scale(1) rotate(0)';
+  const cL=document.getElementById('cL'),cR=document.getElementById('cR');
+  cL.style.transform='translateX(0)';cL.style.opacity='1';
+  cR.style.transform='translateX(0)';cR.style.opacity='1';
+  document.getElementById('rainbow').style.opacity='0';
+  const sw=document.getElementById('sunWrap');sw.style.opacity='0';sw.style.transform='scale(0) translateY(40px)';
+  toS0();
+}
+</script>
+
+
+</body></html>
